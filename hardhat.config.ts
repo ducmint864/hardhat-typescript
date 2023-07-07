@@ -1,6 +1,8 @@
 import "@nomicfoundation/hardhat-toolbox";
-import "dotenv/config"
-import 'hardhat-gas-reporter';
+import "@nomicfoundation/hardhat-ethers"
+import "solidity-coverage";
+import "hardhat-gas-reporter";
+import "dotenv/config";
 
 
 const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
