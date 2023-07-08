@@ -11,7 +11,7 @@ contract Escrow {
     bool public isActive;    // 1 if has tasks in process, 0 if not currently working
     address immutable public Investor;
     address immutable public Worker;
-    AggregatorV3Interface internal priceFeed;
+    AggregatorV3Interface immutable internal priceFeed;
 
     event TaskAdded(string _task);
     event TaskStarted(string _task);
