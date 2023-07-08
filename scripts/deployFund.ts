@@ -1,26 +1,24 @@
 import { ethers, network } from "hardhat";
 import networkConfig from "../helper-configs/NetworkConfig"
+import { Fund } from "../typechain-types";
+import "dotenv/config"
 
 export async function main() {
-    const Price = await ethers.deployContract("Price");
-    await Price.waitForDeployment();
-    const PriceAddress = await Price.getAddress();
-    const chainId : number = network.config.chainId!;
-    const priceFeedAddress = networkConfig[chainId as keyof typeof networkConfig].priceFeedAddress;
+    const PriceContract = await ethers.deployContract("Price");
+    await PriceContract.waitForDeployment();
+    const PriceContractAddress = await PriceContract.getAddress();
+    const chainId : number = network.config.chainId! ?? process.env.DEFAULT_CHAIN_ID;
 
     const FundFactory = await ethers.getContractFactory("Fund", 
         {
             libraries: {
-                Price: PriceAddress
+                Price: PriceContractAddress
             }
         }
     )
-    console.log(`The address of the price feed is: ${priceFeedAddress}`);
-    const Fund = await FundFactory.deploy(priceFeedAddress.toString()); // only parameter: the price feed address of the network this contract is being deployed to
-    // const Fund = FundFactory.deploy();
-    await Fund.waitForDeployment();
-    const FundAddress = await Fund.getAddress();
-    console.log(`Fund contract has been deployed to address ${FundAddress}`);
+    const FundContract : Fund = await FundFactory.deploy(networkConfig[chainId as keyof typeof networkConfig].priceFeedAddress); // only parameter: the price feed address of the network this contract is being deployed to
+    await FundContract.waitForDeployment();
+    console.log(`Fund contract has been deployed to address ${await FundContract.getAddress()}`);
 }
 
 main().catch((err: any) => {

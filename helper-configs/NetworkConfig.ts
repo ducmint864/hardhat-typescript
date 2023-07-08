@@ -1,4 +1,4 @@
-const netWorkConfig = {
+const networkConfig = {
     31337: { 
         priceFeedAddress: "0x694AA1769357215DE4FAC081bf1f309aDC325306" // borrow from sepolia testnet
     },
@@ -7,4 +7,4 @@ const netWorkConfig = {
     }
 }
 
-export default netWorkConfig;
+export default networkConfig;

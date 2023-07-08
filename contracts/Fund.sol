@@ -34,9 +34,6 @@ contract Fund
         require(callSuccess, "Cannot withdraw fund");
     }
 
-    function test() public view returns (uint256) {
-        return Price.getPrice(priceFeed);
-    }
     modifier OnlyOwner {
         require(msg.sender == OWNER, "Only the owner of this funding is allowed to withdraw to funded money!");
         _;

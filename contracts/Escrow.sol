@@ -19,11 +19,11 @@ contract Escrow {
     event Funded(uint256 _amount, address _funder); // Unit : wei
 
     constructor(address priceFeedAddress) {
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
         tasks = new Queue();
         Investor = msg.sender; // my Account1
         isActive = true;
         Worker = Investor;
-        priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
     function viewTask() public view returns (string memory) {
