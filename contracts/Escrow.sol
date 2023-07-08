@@ -11,17 +11,19 @@ contract Escrow {
     bool public isActive;    // 1 if has tasks in process, 0 if not currently working
     address immutable public Investor;
     address immutable public Worker;
+    AggregatorV3Interface price_feed;
 
     event TaskAdded(string _task);
     event TaskStarted(string _task);
     event TaskFinished(string _task);
     event Funded(uint256 _amount, address _funder); // Unit : wei
 
-    constructor() {
+    constructor(AggregatorV3Interface _price_feed) {
         tasks = new Queue();
         Investor = msg.sender; // my Account1
         isActive = true;
         Worker = Investor;
+        price_feed = _price_feed;
     }
 
     function viewTask() public view returns (string memory) {
@@ -37,7 +39,7 @@ contract Escrow {
     }
 
     function viewBalanceInUSD() public view returns (uint256) {
-        return Price.convertToUSD(address(this).balance);
+        return Price.convertToUSD(price_feed, address(this).balance);
     }
 
     function taskCount() public view returns (uint256) {
