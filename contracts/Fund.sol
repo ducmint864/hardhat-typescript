@@ -11,7 +11,7 @@ contract Fund
     address public immutable OWNER;
     address[] public funders;
     mapping(address=>uint256) public AddressToAmount; 
-    AggregatorV3Interface immutable internal priceFeed;    
+    AggregatorV3Interface immutable public priceFeed;    
     
     constructor(address priceFeedAddress) {
         priceFeed = AggregatorV3Interface(priceFeedAddress);
@@ -34,6 +34,9 @@ contract Fund
         require(callSuccess, "Cannot withdraw fund");
     }
 
+    function test() public view returns (uint256) {
+        return Price.getPrice(priceFeed);
+    }
     modifier OnlyOwner {
         require(msg.sender == OWNER, "Only the owner of this funding is allowed to withdraw to funded money!");
         _;
