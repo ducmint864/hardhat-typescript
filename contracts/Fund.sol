@@ -3,6 +3,7 @@
 pragma solidity ^0.8.9;
 
 import "./Price.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Fund
 {
@@ -10,7 +11,7 @@ contract Fund
     address public immutable OWNER;
     address[] public funders;
     mapping(address=>uint256) public AddressToAmount; 
-    AggregatorV3Interface internal priceFeed;    
+    AggregatorV3Interface immutable internal priceFeed;    
     
     constructor(address priceFeedAddress) {
         priceFeed = AggregatorV3Interface(priceFeedAddress);

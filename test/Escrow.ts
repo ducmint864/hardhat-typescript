@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { ethers } from "hardhat";
-import { main } from "../scripts/deploy.ts"
+import { main } from "../scripts/deployEscrow.ts"
 
 describe("Escrow", function () {
     this.beforeEach(function () {

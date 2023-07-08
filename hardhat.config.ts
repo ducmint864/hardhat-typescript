@@ -11,14 +11,14 @@ const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY;
 
 module.exports = {
     solidity: "0.8.18",
-    // defaultNetwork: "",
+    defaultNetwork: "hardhat_localhost",
     networks: {
         sepolia_testnet: {
             url: SEPOLIA_RPC_URL,
             accounts: [PRIVATE_KEY],
             chainId: 11155111,
             gas: 7200,
-            gasPrice: 30000 
+            gasPrice: 30000
         },
         hardhat_localhost: {
             url: process.env.HARDHAT_LOCALHOST_RPC_URL,
@@ -40,5 +40,10 @@ module.exports = {
         noColors: true,
         currency: 'USD',
         coinmarketcap: COINMARKETCAP_API_KEY
+    },
+    external: {
+        contracts: {
+            artifacts: "@chainlink/contracts/dist"
+        }
     }
 };
