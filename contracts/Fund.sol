@@ -3,24 +3,22 @@
 pragma solidity ^0.8.9;
 
 import "./Price.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Fund
 {
-    AggregatorV3Interface price_feed;
     uint256 public constant MINIMUM_USD = 50;
     address public immutable OWNER;
     address[] public funders;
-    
     mapping(address=>uint256) public AddressToAmount; 
+    AggregatorV3Interface internal priceFeed;    
     
-    constructor(AggregatorV3Interface _price_feed) {
-        price_feed = _price_feed;
+    constructor(address priceFeedAddress) {
+        priceFeed = AggregatorV3Interface(priceFeedAddress);
         OWNER = msg.sender;
     }
 
     function fund() public payable {
-        require(Price.convertToUSD(price_feed, msg.value) >= MINIMUM_USD, "Minimum amount not reached! Transaction has been reverted");
+        require(Price.convertToUSD(priceFeed, msg.value) >= MINIMUM_USD, "Minimum amount not reached! Transaction has been reverted");
         funders.push(msg.sender);
         AddressToAmount[msg.sender] += msg.value;
     }
