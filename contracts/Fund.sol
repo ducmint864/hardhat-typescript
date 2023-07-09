@@ -19,6 +19,14 @@ contract Fund {
         _;
     }
 
+    receive() external payable {
+        fund();
+    }    
+
+    fallback() external payable {
+        fund();
+    }
+
     constructor(address priceFeedAddress) {
         priceFeed = AggregatorV3Interface(priceFeedAddress);
         OWNER = msg.sender;
