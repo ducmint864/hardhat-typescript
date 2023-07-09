@@ -47,4 +47,4 @@ export default async function deployFund() {
 }
 
 // Invoke contract deployment function
-deployFund();
+// deployFund();
