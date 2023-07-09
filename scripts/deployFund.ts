@@ -42,7 +42,7 @@ export default async function deployFund() {
         await FundContract.waitForDeployment();
         console.log(`Fund contract has been deployed to address ${await FundContract.getAddress()}`);
     } catch (err: any) {
-        console.log(err);
+        console.log("--> Error deploying Fund contract: ", err);
     }
 }
 
