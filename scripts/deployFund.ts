@@ -41,6 +41,7 @@ export default async function deployFund() {
         const FundContract: Fund = await FundFactory.deploy(priceFeedAddress); // only parameter: the price feed address of the network this contract is being deployed to
         await FundContract.waitForDeployment();
         console.log(`Fund contract has been deployed to address ${await FundContract.getAddress()}`);
+        return await FundContract.getAddress();
     } catch (err: any) {
         console.log("--> Error deploying Fund contract: ", err);
     }
