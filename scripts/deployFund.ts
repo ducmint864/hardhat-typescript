@@ -6,7 +6,7 @@ import { developmentChains } from "../helper-configs/NetworkConfig";
 import deployMockV3Aggregator from "./test/deployMock";
 
 
-export async function main() {
+export default async function deployFund() {
     const chainId: number = network.config.chainId! ?? process.env.DEFAULT_CHAIN_ID;
     let priceFeedAddress;
 
@@ -40,6 +40,6 @@ export async function main() {
     console.log(`Fund contract has been deployed to address ${await FundContract.getAddress()}`);
 }
 
-main().catch((err: any) => {
+deployFund().catch((err: any) => {
     console.log(err);
 })
