@@ -3,7 +3,7 @@ import "dotenv/config"
 import { Fund } from "../typechain-types";
 import networkConfig from "../helper-configs/NetworkConfig"
 import { developmentChains } from "../helper-configs/NetworkConfig";
-import deployMockV3Aggregator from "./test/deployMock";
+import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
 
 // function to deploy the Fund smart contract
 export default async function deployFund() {
