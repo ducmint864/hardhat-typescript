@@ -5,13 +5,11 @@ import networkConfig from "../helper-configs/NetworkConfig"
 import { developmentChains } from "../helper-configs/NetworkConfig";
 import deployMockV3Aggregator from "./test/deployMock";
 
-export let priceFeedAddress : string;
-
 // function to deploy the Fund smart contract
 export default async function deployFund() {
     try {
-
         const chainId: number = network.config.chainId! ?? process.env.DEFAULT_CHAIN_ID;
+        let priceFeedAddress;
 
         console.log("---------------------------- Contract deployment script ----------------------------\n");
         console.log("--> Network: {\n\tName: ", networkConfig[chainId as keyof typeof networkConfig].name);
