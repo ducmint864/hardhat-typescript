@@ -37,8 +37,14 @@ contract Fund {
             Price.convertToUSD(priceFeed, msg.value) >= MINIMUM_USD,
             "Minimum amount not reached! Transaction has been reverted"
         );
-        funders.push(msg.sender);
+
         addressToAmount[msg.sender] += msg.value;
+        for (uint i = 0; i < funders.length; i++)
+        {
+            if (funders[i] == msg.sender)
+                return;
+        }
+        funders.push(msg.sender);
     }
 
     function withdraw() public OnlyOwner {
