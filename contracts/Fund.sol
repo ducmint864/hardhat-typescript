@@ -14,7 +14,7 @@ contract Fund {
     modifier OnlyOwner() {
         require(
             msg.sender == OWNER,
-            "Only the owner of this funding is allowed to withdraw to funded money!"
+            "Only the owner of this funding is allowed to withdraw the funded money!"
         );
         _;
     }
