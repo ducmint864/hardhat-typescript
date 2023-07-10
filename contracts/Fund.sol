@@ -63,4 +63,12 @@ contract Fund {
         );
         require(callSuccess, "Cannot withdraw fund.");
     }
+
+    function convertToUSD(uint256 ETH_amount) public view returns (uint256) {
+        return Price.convertToUSD(priceFeed, ETH_amount);
+    }
+
+    function getFundersCount() public view returns (uint256) {
+        return funders.length;
+    }
 }
