@@ -4,7 +4,6 @@ import { MockV3Aggregator__factory } from "../../typechain-types";
 // deploy and return the address of the Mock Price Feed for later use
 export default async function deployMockV3Aggregator() {
     try {
-        console.log("deploying mock agregatorV3Interface")
         const decimals = 8;
         const initialAnswer = 100000;
         const MockFactory = await ethers.getContractFactory("MockV3Aggregator");
