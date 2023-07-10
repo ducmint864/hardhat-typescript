@@ -5,7 +5,7 @@ import "./Price.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Fund {
-    uint256 public constant MINIMUM_USD = 50;
+    uint256 public constant MINIMUM_USD = 1;
     address public immutable OWNER;
     address[] public funders;
     mapping(address => uint256) public addressToAmount;
@@ -15,6 +15,14 @@ contract Fund {
         require(
             msg.sender == OWNER,
             "Only the owner of this funding is allowed to withdraw to funded money!"
+        );
+        _;
+    }
+
+    modifier MinimumAmountReached() {
+        require(
+            Price.convertToUSD(priceFeed, msg.value) >= MINIMUM_USD,
+            "Minimum amount not reached! Transaction has been reverted."
         );
         _;
     }
@@ -32,12 +40,7 @@ contract Fund {
         OWNER = msg.sender;
     }
 
-    function fund() public payable {
-        require(
-            Price.convertToUSD(priceFeed, msg.value) >= MINIMUM_USD,
-            "Minimum amount not reached! Transaction has been reverted."
-        );
-
+    function fund() public payable MinimumAmountReached {
         addressToAmount[msg.sender] += msg.value;
         for (uint i = 0; i < funders.length; i++)
         {
