@@ -29,12 +29,16 @@ export default async function deployFund() {
         }
 
         if (priceFeedAddress == "") {
-            throw new Error ("Cannot get address of MockV3Aggregator price feed");
+            throw new Error ("Cannot get address of MockV3Aggregator contract");
         }
 
         const PriceContract = await ethers.deployContract("Price");
         await PriceContract.waitForDeployment();
-        const PriceContractAddress = await PriceContract.getAddress();
+        const PriceContractAddress : string = await PriceContract.getAddress() ?? "";
+        if (PriceContractAddress == "") {
+            throw new Error("Cannot get address of Price contract");
+        }
+
         const FundFactory = await ethers.getContractFactory("Fund",
             {
                 libraries: {
@@ -51,5 +55,9 @@ export default async function deployFund() {
     }
 }
 
-// Invoke contract deployment function
-// deployFund();
+// Test deployFund()
+// (async () => {
+//     const response : string[] = await deployFund() ?? ["", ""];
+//     console.log("Address of fund contract: ", response[0]);
+//     console.log("Address of MockV3Aggregator contract: ", response[1]);
+// })();
