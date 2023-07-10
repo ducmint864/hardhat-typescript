@@ -35,7 +35,7 @@ contract Fund {
     function fund() public payable {
         require(
             Price.convertToUSD(priceFeed, msg.value) >= MINIMUM_USD,
-            "Minimum amount not reached! Transaction has been reverted"
+            "Minimum amount not reached! Transaction has been reverted."
         );
 
         addressToAmount[msg.sender] += msg.value;
@@ -56,8 +56,8 @@ contract Fund {
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }(
-            "Here is your fund withdrawal, please don't spend it on personal purposes"
+            "Here is your fund withdrawal, please don't spend it on personal purposes."
         );
-        require(callSuccess, "Cannot withdraw fund");
+        require(callSuccess, "Cannot withdraw fund.");
     }
 }
