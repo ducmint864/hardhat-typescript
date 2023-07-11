@@ -9,7 +9,7 @@ import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
 export default async function deployFund() {
     try {
         // Arrange
-        const chainId: number = network.config.chainId! ?? process.env.DEFAULT_CHAIN_ID;
+        const chainId: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
         let priceFeedAddress;
 
         console.log("---------------------------- Contract deployment script ----------------------------\n");
