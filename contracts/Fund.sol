@@ -5,7 +5,7 @@ import "./Price.sol";
 import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract Fund {
-    uint256 public constant MINIMUM_USD = 1;
+    uint256 public constant MINIMUM_USD = 50;
     address public immutable OWNER;
     address[] public funders;
     mapping(address => uint256) public addressToAmount;

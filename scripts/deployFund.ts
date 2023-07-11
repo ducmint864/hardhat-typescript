@@ -8,6 +8,7 @@ import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
 // function to deploy the Fund smart contract
 export default async function deployFund() {
     try {
+        // Arrange
         const chainId: number = network.config.chainId! ?? process.env.DEFAULT_CHAIN_ID;
         let priceFeedAddress;
 
@@ -17,7 +18,7 @@ export default async function deployFund() {
         console.log("}");
         console.log("------------------------------------------------------------------------------------");
 
-
+        // Deploy Aggregator contract
         if (developmentChains.includes(chainId)) {
             console.log("--> Local host detected! Using MockV3Aggregator contract");
             priceFeedAddress = await deployMockV3Aggregator() ?? "";
@@ -30,13 +31,16 @@ export default async function deployFund() {
             throw new Error ("Cannot get address of MockV3Aggregator contract");
         }
 
+        // Deploy Price contract
         const PriceContract = await ethers.deployContract("Price");
         await PriceContract.waitForDeployment();
         const PriceContractAddress : string = await PriceContract.getAddress() ?? "";
         if (PriceContractAddress == "") {
             throw new Error("Cannot get address of Price contract");
         }
+        console.log(`Price contract has been deployed to address ${PriceContractAddress}`);
 
+        // Deploy Fund contract
         const FundFactory = await ethers.getContractFactory("Fund",
             {
                 libraries: {

@@ -11,24 +11,11 @@ library Price {
         return uint256(price) / 1e8;
     }
 
-    // function convertToUSD(
-    //     AggregatorV3Interface _price_feed,
-    //     uint256 amount
-    // ) public view returns (uint256) {
-    //     return (amount * getPrice(_price_feed)) / 1e18;
-    // }
-
-
-    // mock convertToUSD() function for testing Fund contract (as the operations of Fund contract won't be affected by possibly faulty behaviours from this Price contract)
     function convertToUSD(
         AggregatorV3Interface _price_feed,
         uint256 amount
     ) public view returns (uint256) {
-        if (amount == 0) {
-            return 0;
-        } else {
-            return 2023;
-        }
+        return (amount * getPrice(_price_feed)) / 1e18;
     }
 
     function uint256ToString(
