@@ -30,14 +30,15 @@ describe("Fund", async () => {
     describe("constructor()", async () => {
         it("-Initializes Fund contract with correct price feed address", async () => {
             //assertion
-            assert.equal(await FUND.priceFeed(), PRICE_FEED_ADDRESS);
+            assert.equal(await FUND.getPriceFeed(), PRICE_FEED_ADDRESS);
         })
     })
 
     describe("fund()", async () => {
         it("Fails if you don't fund enough ETH", async () => {
             // assertion
-            await expect(FUND.fund()).to.be.revertedWith("Minimum amount not reached! Transaction has been reverted.");
+            await expect(FUND.fund()).to.be.revertedWithCustomError(FUND, "Fund__BelowMinimum");
+            // await FUND.fund();
         })
 
         it("Store the correct amount of ETH that each funder has funded", async () => {
@@ -45,7 +46,7 @@ describe("Fund", async () => {
             await FUNDER_CONTRACT.fund({ value: SEND_AMOUNT });
 
             // assertion
-            assert.equal(SEND_AMOUNT, await FUNDER_CONTRACT.addressToAmount(FUNDER.address));
+            assert.equal(SEND_AMOUNT, await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address));
         })
 
         it("Only add a funder to the funders array once", async () => {
@@ -61,7 +62,7 @@ describe("Fund", async () => {
     describe("withdraw()", async () => {
         it("Reverts if the account who withdraws ISN'T the owner of the contract", async () => {
             // assertion
-            await expect(FUNDER_CONTRACT.withdraw()).to.be.revertedWith("Only the owner of this funding is allowed to withdraw the funded money!");
+            await expect(FUNDER_CONTRACT.withdraw()).to.be.revertedWithCustomError(FUND, "Fund__NotOwner()");
         })
 
         it("Sends all the funded money to the owner account (single funder)", async () => {
@@ -79,8 +80,8 @@ describe("Fund", async () => {
             // assertion
             assert.deepEqual(contractBalanceAfter, 0n);
             assert.deepEqual(ownerBalanceAfter + txFee, contractBalanceBefore + ownerBalanceBefore);
-            await expect(FUND.funders(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
-            assert.deepEqual(await FUNDER_CONTRACT.addressToAmount(FUNDER.address), 0n); // addressToAmount[] of every funder should be reset to 0 after withdrawal
+            await expect(FUND.getFunder(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
+            assert.deepEqual(await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address), 0n); // addressToAmount[] of every funder should be reset to 0 after withdrawal
         })
 
         it("Sends all the funded money to the owner account (multiple funders)", async () => {
@@ -103,10 +104,10 @@ describe("Fund", async () => {
             // assertion
             assert.equal(contractBalanceAfter, 0n);
             assert.equal(ownerBalanceAfter + txFee, contractBalanceBefore + ownerBalanceBefore);
-            await expect(FUND.funders(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
+            await expect(FUND.getFunder(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
             for (let i = 1; i < accounts.length; i++) {
                 FUNDER = accounts[i];
-                assert.equal(await FUNDER_CONTRACT.addressToAmount(FUNDER.address), 0n); //addressToAmount[] of every funder should be reset to 0 after withdrawal
+                assert.equal(await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address), 0n); //addressToAmount[] of every funder should be reset to 0 after withdrawal
             }
         })
     })
