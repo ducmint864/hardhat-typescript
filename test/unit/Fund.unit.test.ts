@@ -1,11 +1,15 @@
-import { ethers } from "hardhat";
+import { ethers, network } from "hardhat";
 import { assert, expect } from "chai";
 import deployFund from "../../scripts/deployFund";
 import { Fund } from "../../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import networkConfig, { developmentChains } from "../../helper-configs/NetworkConfig";
+import { Network } from "hardhat/types";
+import "dotenv/config";
 
 
 describe("Fund - unit test", async () => {
+    const CHAIN_ID: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
     let FUND_ADDRESS: string;
     let PRICE_FEED_ADDRESS: string;
     let FUND: Fund;
@@ -18,7 +22,16 @@ describe("Fund - unit test", async () => {
     const SEND_AMOUNT: bigint = ethers.parseEther("1")
 
     before(async () => {
-        // action
+        // make sure we're unit-testing on local network
+        try {
+            if (!developmentChains.includes(CHAIN_ID))
+                throw new Error("--> Terminate unit test. Reason: not on local network.")
+        } catch (err: any) {
+            console.log(err);
+            throw err;
+        }
+
+        // arrange
         [FUND_ADDRESS, PRICE_FEED_ADDRESS] = await deployFund() ?? ["", ""];
         FUND = await ethers.getContractAt("Fund", FUND_ADDRESS);
 
