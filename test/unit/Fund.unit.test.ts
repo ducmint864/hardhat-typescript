@@ -7,9 +7,8 @@ import networkConfig, { developmentChains } from "../../helper-configs/NetworkCo
 import { Network } from "hardhat/types";
 import "dotenv/config";
 
-
+!developmentChains.includes(network.config.chainId as number) ? describe.skip :
 describe("Fund - unit test", async () => {
-    const CHAIN_ID: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
     let FUND_ADDRESS: string;
     let PRICE_FEED_ADDRESS: string;
     let FUND: Fund;
@@ -22,15 +21,6 @@ describe("Fund - unit test", async () => {
     const SEND_AMOUNT: bigint = ethers.parseEther("1")
 
     before(async () => {
-        // make sure we're unit-testing on local network
-        try {
-            if (!developmentChains.includes(CHAIN_ID))
-                throw new Error("--> Terminate unit test. Reason: not on local network.")
-        } catch (err: any) {
-            console.log(err);
-            throw err;
-        }
-
         // arrange
         [FUND_ADDRESS, PRICE_FEED_ADDRESS] = await deployFund() ?? ["", ""];
         FUND = await ethers.getContractAt("Fund", FUND_ADDRESS);
