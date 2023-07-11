@@ -24,7 +24,7 @@ describe("Fund", async () => {
 
         [OWNER, FUNDER] = await ethers.getSigners();
         FUNDER_CONTRACT = FUND.connect(FUNDER);
-        OWNER_CONTRACT = FUND.connect(OWNER);        
+        OWNER_CONTRACT = FUND.connect(OWNER);
     })
 
     describe("constructor()", async () => {
@@ -63,7 +63,7 @@ describe("Fund", async () => {
             // assertion
             await expect(FUNDER_CONTRACT.withdraw()).to.be.revertedWith("Only the owner of this funding is allowed to withdraw the funded money!");
         })
-        
+
         it("Sends all the funded money to the owner account (single funder)", async () => {
             // action
             const contractBalanceBefore: bigint = await ethers.provider.getBalance(FUND_ADDRESS);
@@ -71,8 +71,8 @@ describe("Fund", async () => {
 
             const response = await OWNER_CONTRACT.withdraw();
             const receipt = await response.wait(1);
-            const txFee : bigint = receipt?.gasPrice * receipt?.gasUsed;
-            
+            const txFee: bigint = receipt?.gasPrice * receipt?.gasUsed;
+
             const contractBalanceAfter: bigint = await ethers.provider.getBalance(FUND_ADDRESS);
             const ownerBalanceAfter: bigint = await ethers.provider.getBalance(OWNER);
 
@@ -85,16 +85,16 @@ describe("Fund", async () => {
 
         it("Sends all the funded money to the owner account (multiple funders)", async () => {
             // action
-            let accounts : HardhatEthersSigner[] = await ethers.getSigners();
+            let accounts: HardhatEthersSigner[] = await ethers.getSigners();
             for (let i = 1; i < accounts.length; i++) {
                 FUNDER = accounts[i];
                 FUNDER_CONTRACT = await FUND.connect(FUNDER);
-                await FUNDER_CONTRACT.fund({value : SEND_AMOUNT});
+                await FUNDER_CONTRACT.fund({ value: SEND_AMOUNT });
             }
             const contractBalanceBefore: bigint = await ethers.provider.getBalance(FUND_ADDRESS);
             const ownerBalanceBefore: bigint = await ethers.provider.getBalance(OWNER);
-            
-            const response = await OWNER_CONTRACT.withdraw({gasLimit : BigInt("30000000")}); // I have the set the gas limit for the transaction because the amount of ETH withdrawn's too large that the gas will shoot up
+
+            const response = await OWNER_CONTRACT.withdraw({ gasLimit: BigInt("30000000") }); // I have the set the gas limit for the transaction because the amount of ETH withdrawn's too large that the gas will shoot up
             const receipt = await response.wait(1);
             const txFee: bigint = receipt?.gasUsed * receipt?.gasPrice;
 
@@ -104,8 +104,7 @@ describe("Fund", async () => {
             assert.equal(contractBalanceAfter, 0n);
             assert.equal(ownerBalanceAfter + txFee, contractBalanceBefore + ownerBalanceBefore);
             await expect(FUND.funders(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
-            for (let i = 1; i < accounts.length; i++)
-            {
+            for (let i = 1; i < accounts.length; i++) {
                 FUNDER = accounts[i];
                 assert.equal(await FUNDER_CONTRACT.addressToAmount(FUNDER.address), 0n); //addressToAmount[] of every funder should be reset to 0 after withdrawal
             }
