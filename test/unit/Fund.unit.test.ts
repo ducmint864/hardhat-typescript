@@ -5,7 +5,7 @@ import { Fund } from "../../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
 
-describe("Fund", async () => {
+describe("Fund - unit test", async () => {
     let FUND_ADDRESS: string;
     let PRICE_FEED_ADDRESS: string;
     let FUND: Fund;
