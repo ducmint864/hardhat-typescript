@@ -58,8 +58,6 @@ export default async function deployFund() {
 }
 
 // Test deployFund()
-// (async () => {
-//     const response : string[] = await deployFund() ?? ["", ""];
-//     console.log("Address of fund contract: ", response[0]);
-//     console.log("Address of MockV3Aggregator contract: ", response[1]);
-// })();
+(async () => {
+    await deployFund();
+})();
