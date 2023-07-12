@@ -11,7 +11,7 @@ contract Fund {
     uint256 public constant MINIMUM_USD = 50;
     address private immutable i_owner;
     address[] private s_funders;
-    mapping(address => uint256) private s_addressToAmount;
+    mapping(address => uint256) private s_funderToAmount;
     AggregatorV3Interface private s_priceFeed;
 
     modifier OnlyOwner() {
@@ -39,7 +39,7 @@ contract Fund {
     }
 
     function fund() public payable MinimumAmountReached {
-        s_addressToAmount[msg.sender] += msg.value;
+        s_funderToAmount[msg.sender] += msg.value;
         for (uint i = 0; i < s_funders.length; i++) {
             if (s_funders[i] == msg.sender) return;
         }
@@ -48,7 +48,7 @@ contract Fund {
 
     function withdraw() external OnlyOwner {
         for (uint256 i = 0; i < s_funders.length; i++) {
-            s_addressToAmount[s_funders[i]] = 0;
+            s_funderToAmount[s_funders[i]] = 0;
         }
         s_funders = new address[](0);
 
@@ -59,23 +59,7 @@ contract Fund {
         );
         require(callSuccess, "Cannot withdraw fund.");
     }
-
-    // function cheapWithdraw() external OnlyOwner {
-    //     address[] memory tmpFunders = s_funders;
-    //     for (uint256 i = 0; i < tmpFunders.length; i++)
-    //     {
-    //         s_addressToAmount[tmpFunders[i]] = 0;
-    //     }
-    //     s_funders = new address[](0);
-
-    //     (bool callSuccess, ) = payable(msg.sender).call{
-    //         value: address(this).balance
-    //     }(
-    //         "Here is your fund withdrawal, please don't spend it on personal purposes."
-    //     );
-    //     require(callSuccess, "Cannot withdraw fund.");
-    // }
-
+    
     function getFundersCount() external view returns (uint256) {
         return s_funders.length;
     }
@@ -92,9 +76,7 @@ contract Fund {
         return s_funders[index];
     }
 
-    function getAddressToAmount(
-        address funder
-    ) external view returns (uint256) {
-        return s_addressToAmount[funder];
+    function getFunderToAmount(address funder) external view returns (uint256) {
+        return s_funderToAmount[funder];
     }
 }
