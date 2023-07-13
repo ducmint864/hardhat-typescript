@@ -5,6 +5,7 @@ import networkConfig from "../helper-configs/NetworkConfig"
 import { developmentChains } from "../helper-configs/NetworkConfig";
 import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
 import { writeFileSync } from "fs";
+import { join } from "path";
 
 
 // Contract Addresses
@@ -39,7 +40,7 @@ export default async function deployFund() {
         }
 
         if (AGGREGATOR_CONTRACT_ADDRESS == "") {
-            throw new Error ("Cannot get address of MockV3Aggregator contract");
+            throw new Error("Cannot get address of MockV3Aggregator contract");
         }
 
         // Deploy Price contract
@@ -72,6 +73,7 @@ export default async function deployFund() {
 
     } catch (err: any) {
         console.log("--> Error deploying Fund contract: ", err);
+        process.exit(0);
     }
 }
 
@@ -80,6 +82,26 @@ export default async function deployFund() {
 (async () => {
     await deployFund();
 
-    // write addresses of MockV3Aggregator, Price, and Fund contracts to front-end folder
-    
+    // write address of Aggregator, Price, and Fund contracts to front-end folder
+    try {
+        const dirName: string = "../hardhat-ts-front-end/assets/addresses/";
+        writeFileSync(
+            join(dirName, "Aggregator__contract__address.js"),
+            ("export default const AGGREGATOR_CONTRACT_ADDRESS = \"" + AGGREGATOR_CONTRACT_ADDRESS + "\";"),
+            { flag: "w" }
+        );
+        writeFileSync(
+            join(dirName, "Price__contract__address.js"),
+            ("export default const PRICE_CONTRACT_ADDRESS =\"" + PRICE_CONTRACT_ADDRESS + "\";"),
+            { flag: "w" }
+        );
+        writeFileSync(
+            join(dirName, "Fund__contract__address.js"),
+            ("export default const PRICE_CONTRACT_ADDRESS =\"" + FUND_CONTRACT_ADDRESS + "\";"),
+            { flag: "w" }
+        );
+
+    } catch (err: any) {
+        console.log("--> Error saving contract address: ", err);    
+    }
 })();
