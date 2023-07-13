@@ -64,7 +64,7 @@ contract Fund {
         return s_funders.length;
     }
 
-    function getBalance() external view returns (uint256) {
+    function getContractBalance() external view returns (uint256) {
         return address(this).balance;
     }
 
@@ -80,7 +80,7 @@ contract Fund {
         return s_funders[index];
     }
 
-    function getFunderToAmount(address funder) external view returns (uint256) {
-        return s_funderToAmount[funder];
+    function getFunderToAmount(address funderAddress) external view returns (uint256) {
+        return s_funderToAmount[funderAddress];
     }
 }
