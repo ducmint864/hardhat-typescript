@@ -84,24 +84,31 @@ export default async function deployFund() {
 
     // write address of Aggregator, Price, and Fund contracts to front-end folder
     try {
+        let content: string;
         const dirName: string = "../hardhat-ts-front-end/assets/addresses/";
+
+        content = "const AGGREGATOR_CONTRACT_ADDRESS = \"" + AGGREGATOR_CONTRACT_ADDRESS + "\";\n" + "export default AGGREGATOR_CONTRACT_ADDRESS;";
         writeFileSync(
             join(dirName, "Aggregator__contract__address.js"),
-            ("export default const AGGREGATOR_CONTRACT_ADDRESS = \"" + AGGREGATOR_CONTRACT_ADDRESS + "\";"),
+            content,
             { flag: "w" }
         );
+
+        content = "const PRICE_CONTRACT_ADDRESS = \"" + PRICE_CONTRACT_ADDRESS + "\";\n" + "export default PRICE_CONTRACT_ADDRESS;";
         writeFileSync(
             join(dirName, "Price__contract__address.js"),
-            ("export default const PRICE_CONTRACT_ADDRESS =\"" + PRICE_CONTRACT_ADDRESS + "\";"),
+            content,
             { flag: "w" }
         );
+
+        content = "const FUND_CONTRACT_ADDRESS = \"" + FUND_CONTRACT_ADDRESS + "\";\n" + "export default FUND_CONTRACT_ADDRESS;";
         writeFileSync(
             join(dirName, "Fund__contract__address.js"),
-            ("export default const PRICE_CONTRACT_ADDRESS =\"" + FUND_CONTRACT_ADDRESS + "\";"),
+            content,
             { flag: "w" }
         );
 
     } catch (err: any) {
-        console.log("--> Error saving contract address: ", err);    
+        console.log("--> Error saving contract address: ", err);
     }
 })();
