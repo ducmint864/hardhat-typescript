@@ -8,6 +8,10 @@ import { writeFileSync } from "fs";
 import { join } from "path";
 
 
+//
+let IS_FOR_UNIT_TEST: boolean;
+
+
 // Contract Addresses
 let AGGREGATOR_CONTRACT_ADDRESS: string;
 let PRICE_CONTRACT_ADDRESS: string;
@@ -20,10 +24,11 @@ let FUND_CONTRACT: Fund;
 
 
 // deploy Fund contract
-export default async function deployFund() {
+export default async function deployFund(isForUnitTest: boolean = false) {
     try {
         // Arrange
         const chainId: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
+        IS_FOR_UNIT_TEST = isForUnitTest;
 
         console.log("---------------------------- Contract deployment script ----------------------------\n");
         console.log("--> Network: {\n\tName: ", networkConfig[chainId as keyof typeof networkConfig].name);
@@ -80,6 +85,10 @@ export default async function deployFund() {
 
 // Test deployFund()
 (async () => {
+    if (IS_FOR_UNIT_TEST) {
+        process.exit(0);
+    }
+
     await deployFund();
 
     // write address of Aggregator, Price, and Fund contracts to front-end folder
