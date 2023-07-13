@@ -49,7 +49,7 @@ describe("Fund - unit test", async () => {
             await FUNDER_CONTRACT.fund({ value: SEND_AMOUNT });
 
             // assertion
-            assert.equal(SEND_AMOUNT, await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address));
+            assert.equal(SEND_AMOUNT, await FUNDER_CONTRACT.getFunderToAmount(FUNDER.address));
         })
 
         it("Only add a funder to the funders array once", async () => {
@@ -60,6 +60,18 @@ describe("Fund - unit test", async () => {
             // assertion
             assert.equal(1n, await FUNDER_CONTRACT.getFundersCount());
         })
+    })
+
+    describe("getBalance()",  async () => {
+        // We have funded thrice so far, so getBalance() should return 3 x SEND_AMOUNT
+        it ("Returns the correct amount of money the contract is currently holding", async() => {
+            //
+            const expected: bigint = SEND_AMOUNT * 3n;
+            const actual: bigint = await FUND.getBalance();
+
+            // assertion
+            assert.equal(expected, actual);
+        }) 
     })
 
     describe("withdraw()", async () => {
@@ -84,7 +96,7 @@ describe("Fund - unit test", async () => {
             assert.deepEqual(contractBalanceAfter, 0n);
             assert.deepEqual(ownerBalanceAfter + txFee, contractBalanceBefore + ownerBalanceBefore);
             await expect(FUND.getFunder(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
-            assert.deepEqual(await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address), 0n); // addressToAmount[] of every funder should be reset to 0 after withdrawal
+            assert.deepEqual(await FUNDER_CONTRACT.getFunderToAmount(FUNDER.address), 0n); // addressToAmount[] of every funder should be reset to 0 after withdrawal
         })
 
         it("Sends all the funded money to the owner account (multiple funders)", async () => {
@@ -110,8 +122,11 @@ describe("Fund - unit test", async () => {
             await expect(FUND.getFunder(0)).to.be.reverted; // funders[] array should be cleared after withdrawal
             for (let i = 1; i < accounts.length; i++) {
                 FUNDER = accounts[i];
-                assert.equal(await FUNDER_CONTRACT.getAddressToAmount(FUNDER.address), 0n); //addressToAmount[] of every funder should be reset to 0 after withdrawal
+                assert.equal(await FUNDER_CONTRACT.getFunderToAmount(FUNDER.address), 0n); //addressToAmount[] of every funder should be reset to 0 after withdrawal
             }
         })
     })
+
+    // Too lazy to write test cases for: getFunder(), getFunderToAmount(), getPriceFeed(), getFundersCount()
+    // GG
 })
