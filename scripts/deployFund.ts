@@ -1,16 +1,28 @@
 import { ethers, network } from "hardhat";
 import "dotenv/config"
-import { Fund } from "../typechain-types";
+import { Fund, Price } from "../typechain-types";
 import networkConfig from "../helper-configs/NetworkConfig"
 import { developmentChains } from "../helper-configs/NetworkConfig";
 import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
+import { writeFileSync } from "fs";
 
-// function to deploy the Fund smart contract
+
+// Contract Addresses
+let AGGREGATOR_CONTRACT_ADDRESS: string;
+let PRICE_CONTRACT_ADDRESS: string;
+let FUND_CONTRACT_ADDRESS: string;
+
+
+// Contract instances
+let PRICE_CONTRACT: Price;
+let FUND_CONTRACT: Fund;
+
+
+// deploy Fund contract
 export default async function deployFund() {
     try {
         // Arrange
         const chainId: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
-        let priceFeedAddress;
 
         console.log("---------------------------- Contract deployment script ----------------------------\n");
         console.log("--> Network: {\n\tName: ", networkConfig[chainId as keyof typeof networkConfig].name);
@@ -18,46 +30,56 @@ export default async function deployFund() {
         console.log("}");
         console.log("------------------------------------------------------------------------------------");
 
-        // Deploy Aggregator contract
         if (developmentChains.includes(chainId)) {
             console.log("--> Local host detected! Using MockV3Aggregator contract");
-            priceFeedAddress = await deployMockV3Aggregator() ?? "";
+            AGGREGATOR_CONTRACT_ADDRESS = await deployMockV3Aggregator() ?? ""; // Deploy MockV3Aggregator contract
         }
         else {
-            priceFeedAddress = networkConfig[chainId as keyof typeof networkConfig].priceFeedAddress ?? "";
+            AGGREGATOR_CONTRACT_ADDRESS = networkConfig[chainId as keyof typeof networkConfig].priceFeedAddress ?? "";
         }
 
-        if (priceFeedAddress == "") {
+        if (AGGREGATOR_CONTRACT_ADDRESS == "") {
             throw new Error ("Cannot get address of MockV3Aggregator contract");
         }
 
         // Deploy Price contract
-        const PriceContract = await ethers.deployContract("Price");
-        await PriceContract.waitForDeployment();
-        const PriceContractAddress : string = await PriceContract.getAddress() ?? "";
-        if (PriceContractAddress == "") {
+        PRICE_CONTRACT = await ethers.deployContract("Price");
+        await PRICE_CONTRACT.waitForDeployment();
+        PRICE_CONTRACT_ADDRESS = await PRICE_CONTRACT.getAddress() ?? "";
+        if (PRICE_CONTRACT_ADDRESS == "") {
             throw new Error("Cannot get address of Price contract");
         }
-        console.log(`Price contract has been deployed to address ${PriceContractAddress}`);
+        console.log(`Price contract has been deployed to address ${PRICE_CONTRACT_ADDRESS}`);
 
         // Deploy Fund contract
         const FundFactory = await ethers.getContractFactory("Fund",
             {
                 libraries: {
-                    Price: PriceContractAddress
+                    Price: PRICE_CONTRACT_ADDRESS
                 }
             }
         )
-        const FundContract: Fund = await FundFactory.deploy(priceFeedAddress); // only parameter: the price feed address of the network this contract is being deployed to
-        await FundContract.waitForDeployment();
-        console.log(`Fund contract has been deployed to address ${await FundContract.getAddress()}`);
-        return [await FundContract.getAddress(), priceFeedAddress];
+        FUND_CONTRACT = await FundFactory.deploy(AGGREGATOR_CONTRACT_ADDRESS);
+        await FUND_CONTRACT.waitForDeployment();
+        FUND_CONTRACT_ADDRESS = await FUND_CONTRACT.getAddress();
+        if (FUND_CONTRACT_ADDRESS == "") {
+            throw new Error("Cannot get address of Fund contract");
+        }
+        console.log(`Fund contract has been deployed to address ${await FUND_CONTRACT.getAddress()}`);
+
+        // return addresses of all Aggregator, Price, Fund contract for later use
+        return [AGGREGATOR_CONTRACT_ADDRESS, PRICE_CONTRACT_ADDRESS, FUND_CONTRACT_ADDRESS];
+
     } catch (err: any) {
         console.log("--> Error deploying Fund contract: ", err);
     }
 }
 
+
 // Test deployFund()
 (async () => {
     await deployFund();
+
+    // write addresses of MockV3Aggregator, Price, and Fund contracts to front-end folder
+    
 })();

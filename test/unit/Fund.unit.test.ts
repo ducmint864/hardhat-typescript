@@ -10,7 +10,7 @@ import "dotenv/config";
 !developmentChains.includes(network.config.chainId as number) ? describe.skip :
 describe("Fund - unit test", async () => {
     let FUND_ADDRESS: string;
-    let PRICE_FEED_ADDRESS: string;
+    let AGGREGATOR_ADDRESS: string;
     let FUND: Fund;
 
     let OWNER: HardhatEthersSigner;
@@ -22,7 +22,7 @@ describe("Fund - unit test", async () => {
 
     before(async () => {
         // arrange
-        [FUND_ADDRESS, PRICE_FEED_ADDRESS] = await deployFund() ?? ["", ""];
+        [AGGREGATOR_ADDRESS, , FUND_ADDRESS] = await deployFund() ?? ["", ""];
         FUND = await ethers.getContractAt("Fund", FUND_ADDRESS);
 
         [OWNER, FUNDER] = await ethers.getSigners();
@@ -33,7 +33,7 @@ describe("Fund - unit test", async () => {
     describe("constructor()", async () => {
         it("-Initializes Fund contract with correct price feed address", async () => {
             //assertion
-            assert.equal(await FUND.getPriceFeed(), PRICE_FEED_ADDRESS);
+            assert.equal(await FUND.getPriceFeed(), AGGREGATOR_ADDRESS);
         })
     })
 
