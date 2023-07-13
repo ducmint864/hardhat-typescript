@@ -22,7 +22,7 @@ describe("Fund - unit test", async () => {
 
     before(async () => {
         // arrange
-        [AGGREGATOR_ADDRESS, , FUND_ADDRESS] = await deployFund(true) ?? ["", ""]; // deployFund(true): true means deployFund() is run specifically for unit-testing purpose
+        [AGGREGATOR_ADDRESS, , FUND_ADDRESS] = await deployFund() ?? ["", ""];
         FUND = await ethers.getContractAt("Fund", FUND_ADDRESS);
 
         [OWNER, FUNDER] = await ethers.getSigners();
