@@ -1,11 +1,13 @@
 import { ethers, network } from "hardhat";
-import "dotenv/config"
 import { Fund, Price } from "../typechain-types";
-import networkConfig from "../helper-configs/NetworkConfig"
 import { developmentChains } from "../helper-configs/NetworkConfig";
-import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
 import { writeFileSync } from "fs";
 import { join } from "path";
+import networkConfig from "../helper-configs/NetworkConfig"
+import deployMockV3Aggregator from "./test/deployMockV3Aggregator";
+import contractArtifacts from "../artifacts/contracts/Fund.sol/Fund.json"
+import "dotenv/config"
+
 
 
 // Contract Addresses
@@ -24,7 +26,7 @@ export default async function deployFund() {
     try {
         // Arrange
         const chainId: number = (network.config.chainId as number) ?? process.env.DEFAULT_CHAIN_ID;
-        
+
         console.log("---------------------------- Contract deployment script ----------------------------\n");
         console.log("--> Network: {\n\tName: ", networkConfig[chainId as keyof typeof networkConfig].name);
         console.log("\tChain-Id: ", chainId);
@@ -82,33 +84,42 @@ export default async function deployFund() {
 (async () => {
     await deployFund();
 
-    // write address of Aggregator, Price, and Fund contracts to front-end folder
     try {
+        // write address of Aggregator, Price, and Fund contracts to front-end folder
         let content: string;
-        const dirName: string = "../hardhat-ts-front-end/assets/addresses/";
+        const dirName: string = "../hardhat-ts-front-end/assets/";
 
         content = "const AGGREGATOR_CONTRACT_ADDRESS = \"" + AGGREGATOR_CONTRACT_ADDRESS + "\";\n" + "export default AGGREGATOR_CONTRACT_ADDRESS;";
         writeFileSync(
-            join(dirName, "Aggregator__contract__address.js"),
+            join(dirName, "addresses/Aggregator__contract__address.js"),
             content,
             { flag: "w" }
         );
 
         content = "const PRICE_CONTRACT_ADDRESS = \"" + PRICE_CONTRACT_ADDRESS + "\";\n" + "export default PRICE_CONTRACT_ADDRESS;";
         writeFileSync(
-            join(dirName, "Price__contract__address.js"),
+            join(dirName, "addresses/Price__contract__address.js"),
             content,
             { flag: "w" }
         );
 
         content = "const FUND_CONTRACT_ADDRESS = \"" + FUND_CONTRACT_ADDRESS + "\";\n" + "export default FUND_CONTRACT_ADDRESS;";
         writeFileSync(
-            join(dirName, "Fund__contract__address.js"),
+            join(dirName, "addresses/Fund__contract__address.js"),
             content,
             { flag: "w" }
         );
 
+        // write contract's abi to front-end folder
+        content = "export default ABI = " + JSON.stringify(contractArtifacts.abi);
+        writeFileSync(
+            join(dirName, "Fund__contract.js"),
+            content,
+            { flag: "w" }
+        )
+
     } catch (err: any) {
-        console.log("--> Error saving contract address: ", err);
+        console.log("--> Error writing contract's informations to the front-end folder: ", err);
     }
+
 })();
