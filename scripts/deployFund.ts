@@ -111,7 +111,7 @@ export default async function deployFund() {
         );
 
         // write contract's abi to front-end folder
-        content = "export default ABI = " + JSON.stringify(contractArtifacts.abi);
+        content = "export const ABI = " + JSON.stringify(contractArtifacts.abi);
         writeFileSync(
             join(dirName, "Fund__contract.js"),
             content,

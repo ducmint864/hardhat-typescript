@@ -68,7 +68,7 @@ contract Fund {
         return address(this).balance;
     }
 
-    function getOwner() external view returns (address) {
+    function getContractOwner() external view returns (address) {
         return i_owner;
     }
 
