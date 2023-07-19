@@ -67,7 +67,7 @@ describe("Fund - unit test", async () => {
         it ("Returns the correct amount of money the contract is currently holding", async() => {
             //
             const expected: bigint = SEND_AMOUNT * 3n;
-            const actual: bigint = await FUND.getBalance();
+            const actual: bigint = await FUND.getContractBalance();
 
             // assertion
             assert.equal(expected, actual);
