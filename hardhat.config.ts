@@ -5,7 +5,7 @@ import "typechain"
 import "solidity-coverage";
 import "dotenv/config";
 
-const PRIVATE_KEY = process.env.PRIVATE_KEY || "";
+const PRIVATE_KEYS = process.env.PRIVATE_KEYS?.split(" ") || [];
 const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL || "";
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || "";
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY || "";
@@ -16,7 +16,7 @@ module.exports = {
     networks: {
         sepolia_testnet: {
             url: SEPOLIA_RPC_URL,
-            accounts: [PRIVATE_KEY],
+            accounts: PRIVATE_KEYS,
             chainId: 11155111,
         },
         hardhat_localhost: {
