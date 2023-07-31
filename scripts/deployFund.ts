@@ -45,30 +45,43 @@ export default async function deployFund() {
             throw new Error("Cannot get address of MockV3Aggregator contract");
         }
 
-        // Deploy Price contract
-        PRICE_CONTRACT = await ethers.deployContract("Price");
-        await PRICE_CONTRACT.waitForDeployment();
-        PRICE_CONTRACT_ADDRESS = await PRICE_CONTRACT.getAddress() ?? "";
-        if (PRICE_CONTRACT_ADDRESS == "") {
-            throw new Error("Cannot get address of Price contract");
+        // If we had deploy the Price and Fund before, just get their addresses and return them, no need to re-deploy:
+        if (networkConfig[chainId as keyof typeof networkConfig].fundContractAddress != "") {
+            PRICE_CONTRACT_ADDRESS = networkConfig[chainId as keyof typeof networkConfig].priceContractAddress;
+            FUND_CONTRACT_ADDRESS = networkConfig[chainId as keyof typeof networkConfig].fundContractAddress;
+            console.log(`Acquired Price contract at address ${PRICE_CONTRACT_ADDRESS}`);
+            console.log(`Acquired Fund contract at address ${FUND_CONTRACT_ADDRESS}`);
         }
-        console.log(`Price contract has been deployed to address ${PRICE_CONTRACT_ADDRESS}`);
 
-        // Deploy Fund contract
-        const FundFactory = await ethers.getContractFactory("Fund",
-            {
-                libraries: {
-                    Price: PRICE_CONTRACT_ADDRESS
-                }
+        // Otherwise, we have to deploy them:
+        else {
+
+            // Deploy Price contract
+            PRICE_CONTRACT = await ethers.deployContract("Price");
+            await PRICE_CONTRACT.waitForDeployment();
+            PRICE_CONTRACT_ADDRESS = await PRICE_CONTRACT.getAddress() ?? "";
+            if (PRICE_CONTRACT_ADDRESS == "") {
+                throw new Error("Cannot get address of Price contract");
             }
-        )
-        FUND_CONTRACT = await FundFactory.deploy(AGGREGATOR_CONTRACT_ADDRESS);
-        await FUND_CONTRACT.waitForDeployment();
-        FUND_CONTRACT_ADDRESS = await FUND_CONTRACT.getAddress();
-        if (FUND_CONTRACT_ADDRESS == "") {
-            throw new Error("Cannot get address of Fund contract");
+            console.log(`Price contract has been deployed to address ${PRICE_CONTRACT_ADDRESS}`);
+
+            // Deploy Fund contract
+            const FundFactory = await ethers.getContractFactory("Fund",
+                {
+                    libraries: {
+                        Price: PRICE_CONTRACT_ADDRESS
+                    }
+                }
+            )
+            FUND_CONTRACT = await FundFactory.deploy(AGGREGATOR_CONTRACT_ADDRESS);
+            await FUND_CONTRACT.waitForDeployment();
+            FUND_CONTRACT_ADDRESS = await FUND_CONTRACT.getAddress();
+            if (FUND_CONTRACT_ADDRESS == "") {
+                throw new Error("Cannot get address of Fund contract");
+            }
+            console.log(`Fund contract has been deployed to address ${FUND_CONTRACT_ADDRESS}`);
+
         }
-        console.log(`Fund contract has been deployed to address ${await FUND_CONTRACT.getAddress()}`);
 
         // return addresses of all Aggregator, Price, Fund contract for later use
         return [AGGREGATOR_CONTRACT_ADDRESS, PRICE_CONTRACT_ADDRESS, FUND_CONTRACT_ADDRESS];
@@ -87,7 +100,7 @@ export default async function deployFund() {
     try {
         // write address of Aggregator, Price, and Fund contracts to front-end folder
         let content: string;
-        const dirName: string = "../hardhat-ts-front-end/assets/";
+        const dirName: string = "../hardhat-typescript-front-end/assets/";
 
         content = "const AGGREGATOR_CONTRACT_ADDRESS = \"" + AGGREGATOR_CONTRACT_ADDRESS + "\";\n" + "export default AGGREGATOR_CONTRACT_ADDRESS;";
         writeFileSync(
